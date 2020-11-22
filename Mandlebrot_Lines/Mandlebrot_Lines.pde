@@ -34,13 +34,22 @@ void draw() {
   float ymax = maxy;
    //<>//
   while ((xmax-xmin)>density && (xmax-xmin)>density){
-    ArrayList<Point> p = makePoints(x, y, 50, maxiter);
+    ArrayList<Point> p = makePoints(x, y, 500, maxiter);
     color c = color(0,0,0);
     if (p.size()<maxiter){
       c=color((p.size()*(255/maxiter)), (p.size()*(255/maxiter)), 255);
-      c=color((p.size()*(255/maxiter)), 127, 255);
+      //c=color((p.size()*(255/maxiter)), 127, 255);
     }
     drawCurve(p, c);
+
+    p = makePoints(x, -y, 500, maxiter);
+    c = color(0,0,0);
+    if (p.size()<maxiter){
+      c=color((p.size()*(255/maxiter)), (p.size()*(255/maxiter)), 255);
+      //c=color((p.size()*(255/maxiter)), 127, 255);
+    }
+    drawCurve(p, c);
+
     x=((float)round((x+xdir)*100))/100;
     y=((float)round((y+ydir)*100))/100;
     
@@ -69,7 +78,7 @@ void draw() {
       ymin += density;
     }
   }
-  save("D:\\Mandlebrot_Lines_" + maxiter + "_" + density +".tif");
+  //save("D:\\Mandlebrot_Lines_" + maxiter + "_" + density +".tif");
 }
 
 void drawCurve(ArrayList<Point> points, color c){
