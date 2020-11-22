@@ -1,6 +1,14 @@
+float minx = -2.5;
+float maxx = 2;
+float miny = -1.5;
+float maxy = 1.5;
+float midx = (maxx+minx)/2;
+float midy = (maxy+miny)/2;
+float toScreenScale = 1;
+
 void setup() {
-  fullScreen();
-  //size(1600, 900);
+  //fullScreen();
+  size(1600, 900);
   background(255);
   noLoop(); // only execute the draw function once
   colorMode(HSB);
@@ -8,53 +16,98 @@ void setup() {
 
 void draw() {
   float density = 0.1;
-  float minx = -2;
-  float maxx = 1;
-  float miny = -1.5;
-  float maxy = 1.5; //<>//
-  float xscale = width/(maxx-minx);
+  float xscale = width/(maxx-minx); //<>//
   float yscale = height/(maxy-miny);
-  float scale = min(xscale,yscale);
-  int maxiter=20;
+  int maxiter=30;
   
-  for(float x=minx; x<=maxx; x+=density){
-    for(float y=miny; y<=maxy; y+=density){
-      ArrayList<Point> p = makePoints(x, y, 50, maxiter);
-      color c = color(0,0,0);
-      if (p.size()<maxiter){
-        c=color((p.size()*(255/maxiter)), (p.size()*(255/maxiter)), 255);
-      }
-      drawCurve(p, c, scale);
+  float x = minx;
+  float y = miny;
+  float ydir = 0;
+  float xdir = density;
+  
+  toScreenScale = min(xscale,yscale) * 0.9;
+
+  //Take copy of limits because we will change them
+  float xmin = minx;
+  float xmax = maxx;
+  float ymin = miny;
+  float ymax = maxy;
+   //<>//
+  while ((xmax-xmin)>density && (xmax-xmin)>density){
+    ArrayList<Point> p = makePoints(x, y, 50, maxiter);
+    color c = color(0,0,0);
+    if (p.size()<maxiter){
+      c=color((p.size()*(255/maxiter)), (p.size()*(255/maxiter)), 255);
+      c=color((p.size()*(255/maxiter)), 127, 255);
+    }
+    drawCurve(p, c);
+    x=((float)round((x+xdir)*100))/100;
+    y=((float)round((y+ydir)*100))/100;
+    
+    if(xdir>0 && x>xmax){
+      x = xmax;
+      xdir = 0;
+      ydir = density;
+      xmax -= density;
+    }
+    if (ydir>0 && y>ymax){
+      y = ymax;
+      ydir = 0;
+      xdir = -density;
+      ymax -= density;
+    }
+    if(xdir<0 && x<xmin){
+      x = xmin;
+      xdir = 0;
+      ydir = -density;
+      xmin += density;
+    }
+    if (ydir<0 && y<ymin){
+      y = ymin;
+      ydir = 0;
+      xdir = density;
+      ymin += density;
     }
   }
   save("D:\\Mandlebrot_Lines_" + maxiter + "_" + density +".tif");
 }
 
-void drawCurve(ArrayList<Point> points, color c, float s){
-  stroke(c);
-  fill(c);
+void drawCurve(ArrayList<Point> points, color c){
   
   //draw blob at line start
-  circle(width/2 + s*points.get(0).x, height/2 + s*points.get(0).y, height/100);
+  stroke(127);
+  fill(c);
+  circle(xToScreen(points.get(0).x), yToScreen(points.get(0).y), 0.025*toScreenScale);
 
   //Do line
+  stroke(c);
   noFill();
   beginShape();
     
   // the first control point
-  curveVertex(width/2 + s*points.get(0).x, height/2 + s*points.get(0).y); //<>//
+  curveVertex(xToScreen(points.get(0).x), yToScreen(points.get(0).y));
   
   //the curve points
   for (Point p : points){
-    curveVertex(width/2 + s*p.x, height/2 + s*p.y);
+    curveVertex(xToScreen(p.x), yToScreen(p.y));
   }
   
   // the last control point
-  curveVertex(width/2 + s*points.get(points.size()-1).x, height/2 + s*points.get(points.size()-1).y); 
+  curveVertex(xToScreen(points.get(points.size()-1).x), yToScreen(points.get(points.size()-1).y)); 
   endShape();
- 
+
 }
 
+float xToScreen(float x){
+  float c = width/2;
+  return (toScreenScale*(x-midx)) + c;
+}
+
+float yToScreen(float y){
+  float m = height/(maxy-miny);
+  float c = height/2;
+  return (toScreenScale*(y-midy)) + c;
+}
 
 ArrayList<Point> makePoints(float x, float y, float radlimit, int iterlimit){
   ArrayList<Point> points = new ArrayList<Point>();
@@ -68,7 +121,7 @@ ArrayList<Point> makePoints(float x, float y, float radlimit, int iterlimit){
   {
     c++;
     //Calculate next point
-    Complex p2=p.square(); //<>//
+    Complex p2=p.square();
     p=p2.add(initp);
     points.add(new Point(p.real, p.imag));
   }
