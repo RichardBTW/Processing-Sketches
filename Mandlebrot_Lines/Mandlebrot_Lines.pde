@@ -1,5 +1,5 @@
 float minx = -2.5;
-float maxx = 2;
+float maxx = 1.5;
 float miny = -1.5;
 float maxy = 1.5;
 float midx = (maxx+minx)/2;
@@ -7,8 +7,8 @@ float midy = (maxy+miny)/2;
 float toScreenScale = 1;
 
 void setup() {
-  //fullScreen();
-  size(1600, 900);
+  fullScreen();
+  //size(1600, 900);
   background(255);
   noLoop(); // only execute the draw function once
   colorMode(HSB);
@@ -78,13 +78,13 @@ void draw() {
       ymin += density;
     }
   }
-  //save("D:\\Mandlebrot_Lines_" + maxiter + "_" + density +".tif");
+  save("D:/Mandlebrot_Lines_" + maxiter + "_" + density +".png");
 }
 
 void drawCurve(ArrayList<Point> points, color c){
   
   //draw blob at line start
-  stroke(127);
+  stroke(c);
   fill(c);
   circle(xToScreen(points.get(0).x), yToScreen(points.get(0).y), 0.025*toScreenScale);
 
