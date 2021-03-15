@@ -1,0 +1,45 @@
+Option Explicit
+' Copyright © 2002 Jordan Valley
+'
+' Title:              
+' Creation Date:      March 15 2021
+' Modification Date:  None
+' Script Version:     1.00
+' Control2 Version:   3.02.86
+' Hardware Required:  
+' Author:             
+'
+' Description:        None
+'                     
+'
+' Update History:
+'
+' Date      ver   description (author)
+' ------    ---   -----------
+' 
+Const PI=4*Atn(1)
+
+Sub Main
+  Graph.Clear
+  Graph.XAxisMin=0
+  Graph.XAxisMax=13
+
+  Dim x As Double
+  Dim t As Double, b As Double, c As Double, twang As Double
+
+  Graph.IsBatched=True
+
+  For x=0 To 13 Step 0.01
+    t=x
+    Do While t>2*PI
+      t=t-(2*PI)
+    Loop
+    b=5
+    c=b * 0.5 * (1 - Cos(t/2))
+    twang=b * Cos(20 * t) * Exp(-3*t)
+    Graph.Draw x, (b + c + twang)
+  Next x
+
+  Graph.IsBatched=False
+
+End Sub
